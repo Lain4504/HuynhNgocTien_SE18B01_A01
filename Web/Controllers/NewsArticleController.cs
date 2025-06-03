@@ -24,6 +24,51 @@ public class NewsArticleController : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> PublicView(string searchString, int? categoryId, int? page)
+    {
+        var pageSize = 10;
+        var pageNumber = page ?? 1;
+
+        var articles = await _newsArticleService.GetAllAsync();
+        
+        // Only show active articles
+        articles = articles.Where(a => a.NewsStatus == true);
+
+        // Apply search filter
+        if (!string.IsNullOrEmpty(searchString))
+        {
+            articles = articles.Where(a => 
+                a.NewsTitle.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+                a.Headline.Contains(searchString, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Apply category filter
+        if (categoryId.HasValue)
+        {
+            articles = articles.Where(a => a.CategoryId == categoryId);
+        }
+
+        // Get categories for filter dropdown
+        ViewBag.Categories = await _categoryService.GetAllAsync();
+        ViewBag.CurrentSearch = searchString;
+        ViewBag.CurrentCategory = categoryId;
+
+        return View(articles.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList());
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PublicDetails(int id)
+    {
+        var article = await _newsArticleService.GetByIdAsync(id.ToString());
+        if (article == null || article.NewsStatus != true)
+        {
+            return NotFound();
+        }
+
+        return View(article);
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Index(string searchString, int? categoryId, int? page)
     {
         var accountId = HttpContext.Session.GetInt32("AccountId");

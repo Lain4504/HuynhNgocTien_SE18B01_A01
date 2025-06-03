@@ -13,7 +13,7 @@ public class CategoryViewModel
 
     [Required(ErrorMessage = "Description is required")]
     [StringLength(250, ErrorMessage = "Description cannot exceed 250 characters")]
-    public string CategoryDescription { get; set; } = null!;
+    public string CategoryDesciption { get; set; } = null!;
 
     public short? ParentCategoryId { get; set; }
     public bool? IsActive { get; set; } = true;

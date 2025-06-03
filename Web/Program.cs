@@ -50,21 +50,43 @@ using (var scope = app.Services.CreateScope())
         var initializer = services.GetRequiredService<DbInitializer>();
         await initializer.InitializeAsync();
 
-        // Seed default admin if no accounts exist
-        if (!await context.SystemAccounts.AnyAsync())
+        // Seed default admin if it doesn't exist
+        var defaultAdmin = builder.Configuration.GetSection("DefaultAdmin");
+        var adminEmail = defaultAdmin["Email"];
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        
+        logger.LogInformation("Checking for DefaultAdmin with email: {Email}", adminEmail);
+        
+        if (!await context.SystemAccounts.AnyAsync(x => x.AccountEmail == adminEmail))
         {
-            var defaultAdmin = builder.Configuration.GetSection("DefaultAdmin");
-            var adminAccount = new SystemAccount
+            logger.LogInformation("DefaultAdmin not found, creating new admin account");
+            try 
             {
-                AccountId = (short)(await context.SystemAccounts.MaxAsync(x => (int?)x.AccountId) ?? 0 + 1),
-                AccountEmail = defaultAdmin["Email"],
-                AccountPassword = defaultAdmin["Password"],
-                AccountRole = short.Parse(defaultAdmin["Role"] ?? "3"),
-                AccountName = "System Administrator"
-            };
+                var maxId = await context.SystemAccounts.MaxAsync(x => (int?)x.AccountId) ?? 0;
+                logger.LogInformation("Current max AccountId: {MaxId}", maxId);
+                
+                var adminAccount = new SystemAccount
+                {
+                    AccountId = (short)(maxId + 1),
+                    AccountEmail = adminEmail,
+                    AccountPassword = defaultAdmin["Password"],
+                    AccountRole = short.Parse(defaultAdmin["Role"] ?? "3"),
+                    AccountName = "System Administrator"
+                };
 
-            await context.SystemAccounts.AddAsync(adminAccount);
-            await context.SaveChangesAsync();
+                await context.SystemAccounts.AddAsync(adminAccount);
+                await context.SaveChangesAsync();
+                logger.LogInformation("DefaultAdmin created successfully with ID: {Id}", adminAccount.AccountId);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error creating DefaultAdmin account");
+                throw;
+            }
+        }
+        else
+        {
+            logger.LogInformation("DefaultAdmin already exists");
         }
     }
     catch (Exception ex)

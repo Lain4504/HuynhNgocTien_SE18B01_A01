@@ -83,7 +83,7 @@ public class CategoryController : Controller
             var category = new Category
             {
                 CategoryName = model.CategoryName,
-                CategoryDesciption = model.CategoryDescription,
+                CategoryDesciption = model.CategoryDesciption,
                 ParentCategoryId = model.ParentCategoryId,
                 IsActive = model.IsActive
             };
@@ -125,7 +125,7 @@ public class CategoryController : Controller
         {
             CategoryId = category.CategoryId,
             CategoryName = category.CategoryName,
-            CategoryDescription = category.CategoryDesciption,
+            CategoryDesciption = category.CategoryDesciption,
             ParentCategoryId = category.ParentCategoryId,
             IsActive = category.IsActive,
             AvailableParentCategories = categories.Where(c => c.CategoryId != id).ToList() // Exclude current category from parent options
@@ -164,7 +164,7 @@ public class CategoryController : Controller
             }
 
             category.CategoryName = model.CategoryName;
-            category.CategoryDesciption = model.CategoryDescription;
+            category.CategoryDesciption = model.CategoryDesciption;
             category.ParentCategoryId = model.ParentCategoryId;
             category.IsActive = model.IsActive;
 

@@ -26,6 +26,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="NewsArticle" asp-action="Index">News Articles</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="NewsArticle" asp-action="PublicView">News</a>
+                            </li>
                             @if (Context.Session.GetInt32("AccountRole") == 3)
                             {
                                 <li class="nav-item">
