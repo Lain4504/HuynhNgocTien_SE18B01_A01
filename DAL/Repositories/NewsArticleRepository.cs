@@ -88,6 +88,11 @@ public class NewsArticleRepository : INewsArticleRepository
 
     public async Task<bool> ExistsAsync(string id)
     {
-        return await _context.NewsArticles.AnyAsync(n => n.NewsArticleId == id);
+        return await _context.NewsArticles.AnyAsync(x => x.NewsArticleId == id);
+    }
+
+    public async Task<IEnumerable<Tag>> GetAllTagsAsync()
+    {
+        return await _context.Tags.ToListAsync();
     }
 } 

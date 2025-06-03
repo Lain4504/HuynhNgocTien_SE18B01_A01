@@ -159,9 +159,11 @@ public class NewsArticleController : Controller
         }
 
         var categories = await _categoryService.GetAllAsync();
+        var tags = await _newsArticleService.GetAllTagsAsync();
         var model = new NewsArticleViewModel
         {
-            AvailableCategories = categories.ToList()
+            AvailableCategories = categories.ToList(),
+            AvailableTags = tags.ToList()
         };
 
         return View(model);
@@ -184,7 +186,14 @@ public class NewsArticleController : Controller
 
         if (!ModelState.IsValid)
         {
+            // Add validation errors to ViewBag
+            ViewBag.ValidationErrors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+
             model.AvailableCategories = (await _categoryService.GetAllAsync()).ToList();
+            model.AvailableTags = (await _newsArticleService.GetAllTagsAsync()).ToList();
             return View(model);
         }
 
@@ -192,6 +201,7 @@ public class NewsArticleController : Controller
         {
             var article = new NewsArticle
             {
+                NewsArticleId = model.NewsArticleId,
                 NewsTitle = model.NewsTitle,
                 Headline = model.Headline,
                 NewsContent = model.NewsContent,
@@ -209,12 +219,13 @@ public class NewsArticleController : Controller
         {
             ModelState.AddModelError("", ex.Message);
             model.AvailableCategories = (await _categoryService.GetAllAsync()).ToList();
+            model.AvailableTags = (await _newsArticleService.GetAllTagsAsync()).ToList();
             return View(model);
         }
     }
 
     [HttpGet]
-    public async Task<IActionResult> Edit(int id)
+    public async Task<IActionResult> Edit(string id)
     {
         var accountId = HttpContext.Session.GetInt32("AccountId");
         if (!accountId.HasValue)
@@ -228,7 +239,7 @@ public class NewsArticleController : Controller
             return Forbid();
         }
 
-        var article = await _newsArticleService.GetByIdAsync(id.ToString());
+        var article = await _newsArticleService.GetByIdAsync(id);
         if (article == null)
         {
             return NotFound();
@@ -248,7 +259,9 @@ public class NewsArticleController : Controller
             NewsSource = article.NewsSource,
             CategoryId = (short)article.CategoryId!,
             NewsStatus = (bool)article.NewsStatus!,
-            AvailableCategories = (await _categoryService.GetAllAsync()).ToList()
+            AvailableCategories = (await _categoryService.GetAllAsync()).ToList(),
+            AvailableTags = (await _newsArticleService.GetAllTagsAsync()).ToList(),
+            SelectedTagIds = article.Tags.Select(t => t.TagId).ToList()
         };
 
         return View(model);

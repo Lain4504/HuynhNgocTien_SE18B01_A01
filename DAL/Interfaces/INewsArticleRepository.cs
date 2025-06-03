@@ -13,4 +13,5 @@ public interface INewsArticleRepository
     Task<NewsArticle> UpdateAsync(NewsArticle article);
     Task DeleteAsync(string id);
     Task<bool> ExistsAsync(string id);
+    Task<IEnumerable<Tag>> GetAllTagsAsync();
 } 

@@ -5,7 +5,7 @@ namespace Web.ViewModels;
 
 public class NewsArticleViewModel
 {
-    public string NewsArticleId { get; set; } = null!;
+    public string NewsArticleId { get; set; } = DateTime.Now.ToString("yyyyMMddHHmmss");
 
     [Required(ErrorMessage = "Title is required")]
     [StringLength(400, ErrorMessage = "Title cannot exceed 400 characters")]
@@ -25,7 +25,8 @@ public class NewsArticleViewModel
     [Required(ErrorMessage = "Category is required")]
     public short CategoryId { get; set; }
 
-    public bool NewsStatus { get; set; } = true;
+    [Display(Name = "Published")]
+    public bool NewsStatus { get; set; }
 
     public DateTime? CreatedDate { get; set; }
     public DateTime? ModifiedDate { get; set; }

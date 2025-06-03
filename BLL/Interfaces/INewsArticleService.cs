@@ -16,4 +16,5 @@ public interface INewsArticleService
     Task<IEnumerable<NewsArticle>> SearchAsync(string searchTerm);
     Task<IEnumerable<NewsArticle>> GetNewsStatisticsAsync(DateTime startDate, DateTime endDate);
     Task<bool> ExistsAsync(string id);
+    Task<IEnumerable<Tag>> GetAllTagsAsync();
 } 

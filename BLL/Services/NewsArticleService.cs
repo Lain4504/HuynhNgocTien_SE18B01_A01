@@ -59,7 +59,6 @@ public class NewsArticleService : INewsArticleService
 
         // Set creation date
         article.CreatedDate = DateTime.Now;
-        article.NewsStatus = true; // Set as active by default
 
         // Create article
         var createdArticle = await _newsRepository.AddAsync(article);
@@ -129,5 +128,10 @@ public class NewsArticleService : INewsArticleService
     public async Task<bool> ExistsAsync(string id)
     {
         return await _newsRepository.ExistsAsync(id);
+    }
+
+    public async Task<IEnumerable<Tag>> GetAllTagsAsync()
+    {
+        return await _newsRepository.GetAllTagsAsync();
     }
 } 
