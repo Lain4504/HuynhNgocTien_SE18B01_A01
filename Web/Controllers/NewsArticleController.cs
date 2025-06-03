@@ -382,17 +382,16 @@ public class NewsArticleController : Controller
     [HttpGet]
     public async Task<IActionResult> Report(DateTime? startDate, DateTime? endDate)
     {
-        var userRole = HttpContext.Session.GetInt32("AccountRole");
-        if (userRole != 3) // Not Admin
+        // Check if user is admin
+        if (HttpContext.Session.GetInt32("AccountRole") != 3)
         {
+            TempData["Error"] = "You do not have permission to access this page.";
             return RedirectToAction("Index");
         }
 
-        ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
-        ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
+        var articles = (await _newsArticleService.GetAllAsync()).ToList();
 
-        var articles = await _newsArticleService.GetAllAsync();
-
+        // Apply date filters
         if (startDate.HasValue)
         {
             articles = articles.Where(x => x.CreatedDate >= startDate.Value).ToList();
@@ -403,6 +402,25 @@ public class NewsArticleController : Controller
             articles = articles.Where(x => x.CreatedDate <= endDate.Value.AddDays(1)).ToList();
         }
 
-        return View(articles.OrderByDescending(x => x.CreatedDate));
+        // Sort by created date in descending order
+        articles = articles.OrderByDescending(x => x.CreatedDate).ToList();
+
+        var model = new ReportViewModel
+        {
+            StartDate = startDate,
+            EndDate = endDate,
+            Articles = articles,
+            TotalArticles = articles.Count,
+            PublishedArticles = articles.Count(x => x.NewsStatus == true),
+            DraftArticles = articles.Count(x => x.NewsStatus == false),
+            ArticlesByCategory = articles
+                .GroupBy(x => x.Category?.CategoryName ?? "Uncategorized")
+                .ToDictionary(g => g.Key, g => g.Count()),
+            ArticlesByAuthor = articles
+                .GroupBy(x => x.CreatedBy?.AccountName ?? "Unknown")
+                .ToDictionary(g => g.Key, g => g.Count())
+        };
+
+        return View(model);
     }
 } 

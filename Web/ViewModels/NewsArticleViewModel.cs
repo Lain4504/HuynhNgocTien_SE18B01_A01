@@ -39,4 +39,16 @@ public class NewsArticleViewModel
     public List<int> SelectedTagIds { get; set; } = new();
     public List<Tag> AvailableTags { get; set; } = new();
     public List<Category> AvailableCategories { get; set; } = new();
+}
+
+public class ReportViewModel
+{
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public List<NewsArticle> Articles { get; set; } = new();
+    public int TotalArticles { get; set; }
+    public int PublishedArticles { get; set; }
+    public int DraftArticles { get; set; }
+    public Dictionary<string, int> ArticlesByCategory { get; set; } = new();
+    public Dictionary<string, int> ArticlesByAuthor { get; set; } = new();
 } 
