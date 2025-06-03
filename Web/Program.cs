@@ -1,6 +1,8 @@
 using DAL.Context;
 using DAL.Interfaces;
 using DAL.Repositories;
+using BLL.Interfaces;
+using BLL.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,8 +20,22 @@ builder.Services.AddScoped<INewsArticleRepository, NewsArticleRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 
+// Register services
+builder.Services.AddScoped<ISystemAccountService, SystemAccountService>();
+builder.Services.AddScoped<INewsArticleService, NewsArticleService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
 // Register DbInitializer
 builder.Services.AddScoped<DbInitializer>();
+
+// Add session support
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
@@ -53,6 +69,9 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+// Add session middleware
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

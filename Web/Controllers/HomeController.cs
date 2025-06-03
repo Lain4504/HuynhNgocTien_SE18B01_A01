@@ -1,31 +1,62 @@
-using System.Diagnostics;
+using BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Web.Models;
 
 namespace Web.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    private readonly INewsArticleService _newsArticleService;
+    private readonly ICategoryService _categoryService;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(INewsArticleService newsArticleService, ICategoryService categoryService)
     {
-        _logger = logger;
+        _newsArticleService = newsArticleService;
+        _categoryService = categoryService;
     }
 
-    public IActionResult Index()
+    [HttpGet]
+    public async Task<IActionResult> Index()
     {
+        var accountId = HttpContext.Session.GetInt32("AccountId");
+        if (!accountId.HasValue)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var role = HttpContext.Session.GetInt32("AccountRole");
+        var articles = await _newsArticleService.GetAllAsync();
+
+        // Filter articles based on role
+        if (role == 1) // Staff
+        {
+            articles = articles.Where(a => a.CreatedById == accountId);
+        }
+        else if (role == 2) // Lecturer
+        {
+            articles = articles.Where(a => a.NewsStatus == true); // Only published articles
+        }
+
+        // Get latest articles
+        var latestArticles = articles.OrderByDescending(a => a.CreatedDate).Take(5).ToList();
+
+        // Get categories with article counts
+        var categories = await _categoryService.GetAllAsync();
+        var categoryStats = categories.Select(c => new
+        {
+            Category = c,
+            ArticleCount = articles.Count(a => a.CategoryId == c.CategoryId)
+        }).ToList();
+
+        ViewBag.LatestArticles = latestArticles;
+        ViewBag.CategoryStats = categoryStats;
+        ViewBag.UserRole = role;
+
         return View();
     }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    [HttpGet]
     public IActionResult Error()
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View();
     }
 }
