@@ -84,9 +84,9 @@ public class NewsArticleController : Controller
         var articles = await _newsArticleService.GetAllAsync();
         
         // Filter by role
-        if (role == 1) // Staff
+        if (role == 1) // Staff can view all articles but can only edit their own
         {
-            articles = articles.Where(a => a.CreatedById == accountId);
+            // No filtering needed for viewing
         }
         else if (role == 2) // Lecturer
         {

@@ -116,6 +116,6 @@ app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=NewsArticle}/{action=PublicView}/{id?}");
 
 app.Run();

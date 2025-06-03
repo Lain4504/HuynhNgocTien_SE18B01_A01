@@ -27,9 +27,9 @@ public class HomeController : Controller
         var articles = await _newsArticleService.GetAllAsync();
 
         // Filter articles based on role
-        if (role == 1) // Staff
+        if (role == 1) // Staff can view all articles
         {
-            articles = articles.Where(a => a.CreatedById == accountId);
+            // No filtering needed for viewing
         }
         else if (role == 2) // Lecturer
         {
