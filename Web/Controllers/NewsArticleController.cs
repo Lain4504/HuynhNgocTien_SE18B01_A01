@@ -2,6 +2,8 @@ using BLL.Interfaces;
 using DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Web.ViewModels;
+using Microsoft.EntityFrameworkCore;
+using DAL.Interfaces;
 
 namespace Web.Controllers;
 
@@ -9,11 +11,16 @@ public class NewsArticleController : Controller
 {
     private readonly INewsArticleService _newsArticleService;
     private readonly ICategoryService _categoryService;
+    private readonly ISystemAccountService _accountService;
 
-    public NewsArticleController(INewsArticleService newsArticleService, ICategoryService categoryService)
+    public NewsArticleController(
+        INewsArticleService newsArticleService,
+        ICategoryService categoryService,
+        ISystemAccountService accountService)
     {
         _newsArticleService = newsArticleService;
         _categoryService = categoryService;
+        _accountService = accountService;
     }
 
     [HttpGet]
@@ -291,5 +298,52 @@ public class NewsArticleController : Controller
         {
             return BadRequest(ex.Message);
         }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> History(string searchString)
+    {
+        var userId = HttpContext.Session.GetInt32("AccountId");
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        ViewBag.CurrentFilter = searchString;
+        var articles = await _newsArticleService.GetByAuthorAsync((short)userId.Value);
+
+        if (!string.IsNullOrEmpty(searchString))
+        {
+            articles = articles.Where(x => x.NewsTitle.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        return View(articles);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Report(DateTime? startDate, DateTime? endDate)
+    {
+        var userRole = HttpContext.Session.GetInt32("AccountRole");
+        if (userRole != 3) // Not Admin
+        {
+            return RedirectToAction("Index");
+        }
+
+        ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
+        ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
+
+        var articles = await _newsArticleService.GetAllAsync();
+
+        if (startDate.HasValue)
+        {
+            articles = articles.Where(x => x.CreatedDate >= startDate.Value).ToList();
+        }
+
+        if (endDate.HasValue)
+        {
+            articles = articles.Where(x => x.CreatedDate <= endDate.Value.AddDays(1)).ToList();
+        }
+
+        return View(articles.OrderByDescending(x => x.CreatedDate));
     }
 } 

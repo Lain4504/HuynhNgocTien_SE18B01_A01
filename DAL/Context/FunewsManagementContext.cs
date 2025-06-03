@@ -24,7 +24,10 @@ public partial class FunewsManagementContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // Connection string will be configured in Program.cs
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer("Server=DESKTOP-MKN16AB;Database=FUNewsManagement;User Id=sa;Password=root;TrustServerCertificate=True");
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

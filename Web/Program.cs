@@ -4,6 +4,7 @@ using DAL.Repositories;
 using BLL.Interfaces;
 using BLL.Services;
 using Microsoft.EntityFrameworkCore;
+using DAL.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,14 +40,32 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-// Initialize database
+// Initialize database and seed data
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
+        var context = services.GetRequiredService<FunewsManagementContext>();
         var initializer = services.GetRequiredService<DbInitializer>();
         await initializer.InitializeAsync();
+
+        // Seed default admin if no accounts exist
+        if (!await context.SystemAccounts.AnyAsync())
+        {
+            var defaultAdmin = builder.Configuration.GetSection("DefaultAdmin");
+            var adminAccount = new SystemAccount
+            {
+                AccountId = 1,
+                AccountEmail = defaultAdmin["Email"],
+                AccountPassword = defaultAdmin["Password"],
+                AccountRole = short.Parse(defaultAdmin["Role"] ?? "3"),
+                AccountName = "System Administrator"
+            };
+
+            await context.SystemAccounts.AddAsync(adminAccount);
+            await context.SaveChangesAsync();
+        }
     }
     catch (Exception ex)
     {

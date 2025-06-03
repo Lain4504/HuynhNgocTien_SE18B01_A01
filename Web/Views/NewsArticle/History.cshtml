@@ -1,43 +1,30 @@
 @model IEnumerable<DAL.Entities.NewsArticle>
 
 @{
-    ViewData["Title"] = "News Articles";
-    var userRole = Context.Session.GetInt32("AccountRole");
-    var userId = Context.Session.GetInt32("AccountId");
+    ViewData["Title"] = "My News History";
 }
 
 <div class="card shadow">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">News Articles</h5>
-        @if (userRole == 1) // Staff
-        {
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Create New
-            </a>
-        }
+        <h5 class="mb-0">My News History</h5>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
     </div>
     <div class="card-body">
         <div class="row mb-3">
             <div class="col-md-6">
-                <form asp-action="Index" method="get" class="d-flex gap-2">
+                <form asp-action="History" method="get" class="d-flex gap-2">
                     <input type="text" name="searchString" class="form-control" placeholder="Search by title..." value="@ViewBag.CurrentFilter" />
                     <button type="submit" class="btn btn-outline-primary">
                         <i class="bi bi-search"></i> Search
                     </button>
                     @if (!string.IsNullOrEmpty(ViewBag.CurrentFilter))
                     {
-                        <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+                        <a asp-action="History" class="btn btn-outline-secondary">Clear</a>
                     }
                 </form>
             </div>
-            @if (userRole == 1) // Staff
-            {
-                <div class="col-md-6 text-end">
-                    <a asp-action="History" class="btn btn-outline-info">
-                        <i class="bi bi-clock-history"></i> My News History
-                    </a>
-                </div>
-            }
         </div>
 
         @if (Model.Any())
@@ -50,7 +37,7 @@
                             <th>Category</th>
                             <th>Status</th>
                             <th>Created Date</th>
-                            <th>Created By</th>
+                            <th>Modified Date</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -70,25 +57,22 @@
                                         <span class="badge bg-warning">Draft</span>
                                     }
                                 </td>
-                                <td>@item.CreatedDate?.ToString("MM/dd/yyyy")</td>
-                                <td>@item.CreatedBy?.AccountName</td>
+                                <td>@item.CreatedDate?.ToString("MM/dd/yyyy HH:mm")</td>
+                                <td>@item.ModifiedDate?.ToString("MM/dd/yyyy HH:mm")</td>
                                 <td>
                                     <div class="btn-group">
                                         <a asp-action="Details" asp-route-id="@item.NewsArticleId" 
                                            class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        @if (userRole == 1 && item.CreatedById == userId)
-                                        {
-                                            <a asp-action="Edit" asp-route-id="@item.NewsArticleId" 
-                                               class="btn btn-sm btn-outline-warning">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                    onclick="confirmDelete('@item.NewsArticleId')">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        }
+                                        <a asp-action="Edit" asp-route-id="@item.NewsArticleId" 
+                                           class="btn btn-sm btn-outline-warning">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                onclick="confirmDelete('@item.NewsArticleId')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -100,7 +84,7 @@
         else
         {
             <div class="alert alert-info">
-                No news articles found.
+                No news articles found in your history.
             </div>
         }
     </div>
