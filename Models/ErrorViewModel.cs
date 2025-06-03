@@ -1,4 +1,4 @@
-namespace QE180039_PRN222_A01.Models
+namespace HuynhNgocTien_SE18B01_A01.Models
 {
     public class ErrorViewModel
     {
