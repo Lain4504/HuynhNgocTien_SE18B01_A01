@@ -100,11 +100,17 @@ public class NewsArticleService : INewsArticleService
 
     public async Task DeleteAsync(string id)
     {
-        if (!await _newsRepository.ExistsAsync(id))
+        var article = await _newsRepository.GetByIdAsync(id);
+        if (article == null)
         {
             throw new InvalidOperationException("News article not found");
         }
 
+        // Clear the tags collection first
+        article.Tags.Clear();
+        await _newsRepository.UpdateAsync(article);
+
+        // Now delete the article
         await _newsRepository.DeleteAsync(id);
     }
 

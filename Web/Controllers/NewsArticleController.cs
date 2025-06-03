@@ -322,7 +322,7 @@ public class NewsArticleController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(string id)
     {
         var accountId = HttpContext.Session.GetInt32("AccountId");
         if (!accountId.HasValue)
@@ -338,7 +338,7 @@ public class NewsArticleController : Controller
 
         try
         {
-            var article = await _newsArticleService.GetByIdAsync(id.ToString());
+            var article = await _newsArticleService.GetByIdAsync(id);
             if (article == null)
             {
                 return NotFound();
@@ -349,12 +349,12 @@ public class NewsArticleController : Controller
                 return Forbid();
             }
 
-            await _newsArticleService.DeleteAsync(id.ToString());
-            return RedirectToAction(nameof(Index));
+            await _newsArticleService.DeleteAsync(id);
+            return Json(new { success = true });
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            return Json(new { success = false, message = ex.Message });
         }
     }
 
