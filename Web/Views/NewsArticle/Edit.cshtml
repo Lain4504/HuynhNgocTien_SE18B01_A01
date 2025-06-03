@@ -84,8 +84,9 @@
 
                     <div class="mb-3">
                         <div class="form-check form-switch">
+                            <input type="hidden" asp-for="NewsStatus" value="false" />
                             <input asp-for="NewsStatus" class="form-check-input" type="checkbox" value="true" />
-                            <label asp-for="NewsStatus" class="form-check-label"></label>
+                            <label asp-for="NewsStatus" class="form-check-label">Published</label>
                         </div>
                     </div>
 

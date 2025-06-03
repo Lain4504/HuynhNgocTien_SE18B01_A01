@@ -258,7 +258,7 @@ public class NewsArticleController : Controller
             NewsContent = article.NewsContent,
             NewsSource = article.NewsSource,
             CategoryId = (short)article.CategoryId!,
-            NewsStatus = (bool)article.NewsStatus!,
+            NewsStatus = article.NewsStatus ?? false,
             AvailableCategories = (await _categoryService.GetAllAsync()).ToList(),
             AvailableTags = (await _newsArticleService.GetAllTagsAsync()).ToList(),
             SelectedTagIds = article.Tags.Select(t => t.TagId).ToList()

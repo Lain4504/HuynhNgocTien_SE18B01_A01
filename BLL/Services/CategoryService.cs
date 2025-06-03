@@ -47,9 +47,6 @@ public class CategoryService : ICategoryService
             }
         }
 
-        // Set as active by default
-        category.IsActive = true;
-
         return await _categoryRepository.AddAsync(category);
     }
 

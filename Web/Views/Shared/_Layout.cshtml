@@ -29,11 +29,14 @@
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="NewsArticle" asp-action="Index">News Articles</a>
                             </li>
-                            @if (Context.Session.GetInt32("AccountRole") == 3)
+                            @if (Context.Session.GetInt32("AccountRole") == 3 || Context.Session.GetInt32("AccountRole") == 1)
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Category" asp-action="Index">Categories</a>
                                 </li>
+                            }
+                            @if (Context.Session.GetInt32("AccountRole") == 3)
+                            {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Account" asp-action="Index">Accounts</a>
                                 </li>

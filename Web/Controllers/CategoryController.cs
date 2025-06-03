@@ -24,7 +24,7 @@ public class CategoryController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 3) // Only Admin can manage categories
+        if (role != 3 && role != 1) // Allow both Admin and Staff to manage categories
         {
             return Forbid();
         }
@@ -43,7 +43,7 @@ public class CategoryController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 3) // Only Admin can create categories
+        if (role != 3 && role != 1) // Allow both Admin and Staff to create categories
         {
             return Forbid();
         }
@@ -67,7 +67,7 @@ public class CategoryController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 3) // Only Admin can create categories
+        if (role != 3 && role != 1) // Allow both Admin and Staff to create categories
         {
             return Forbid();
         }
@@ -109,7 +109,7 @@ public class CategoryController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 3) // Only Admin can edit categories
+        if (role != 3 && role != 1) // Allow both Admin and Staff to edit categories
         {
             return Forbid();
         }
@@ -127,7 +127,7 @@ public class CategoryController : Controller
             CategoryName = category.CategoryName,
             CategoryDesciption = category.CategoryDesciption,
             ParentCategoryId = category.ParentCategoryId,
-            IsActive = category.IsActive,
+            IsActive = category.IsActive ?? false,
             AvailableParentCategories = categories.Where(c => c.CategoryId != id).ToList() // Exclude current category from parent options
         };
 
@@ -144,7 +144,7 @@ public class CategoryController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 3) // Only Admin can edit categories
+        if (role != 3 && role != 1) // Allow both Admin and Staff to edit categories
         {
             return Forbid();
         }
@@ -189,7 +189,7 @@ public class CategoryController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 3) // Only Admin can delete categories
+        if (role != 3 && role != 1) // Allow both Admin and Staff to delete categories
         {
             return Forbid();
         }

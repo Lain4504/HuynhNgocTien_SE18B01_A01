@@ -16,7 +16,7 @@ public class CategoryViewModel
     public string CategoryDesciption { get; set; } = null!;
 
     public short? ParentCategoryId { get; set; }
-    public bool? IsActive { get; set; } = true;
+    public bool IsActive { get; set; } = true;
 
     // Navigation properties
     public Category? ParentCategory { get; set; }
