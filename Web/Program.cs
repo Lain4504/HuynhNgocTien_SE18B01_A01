@@ -56,7 +56,7 @@ using (var scope = app.Services.CreateScope())
             var defaultAdmin = builder.Configuration.GetSection("DefaultAdmin");
             var adminAccount = new SystemAccount
             {
-                AccountId = 1,
+                AccountId = (short)(await context.SystemAccounts.MaxAsync(x => (int?)x.AccountId) ?? 0 + 1),
                 AccountEmail = defaultAdmin["Email"],
                 AccountPassword = defaultAdmin["Password"],
                 AccountRole = short.Parse(defaultAdmin["Role"] ?? "3"),

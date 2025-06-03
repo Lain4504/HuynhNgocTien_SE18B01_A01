@@ -100,7 +100,7 @@ public class CategoryService : ICategoryService
         var allCategories = await _categoryRepository.GetAllAsync();
         return allCategories.Where(c =>
             c.CategoryName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-            c.CategoryDescription.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+            c.CategoryDesciption.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task<bool> ExistsAsync(short id)
