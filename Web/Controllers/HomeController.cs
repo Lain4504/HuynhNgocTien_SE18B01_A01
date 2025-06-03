@@ -41,7 +41,8 @@ public class HomeController : Controller
 
         // Get categories with article counts
         var categories = await _categoryService.GetAllAsync();
-        var categoryStats = categories.Select(c => new
+        var activeCategories = categories.Where(c => c.IsActive == true).ToList();
+        var categoryStats = activeCategories.Select(c => new
         {
             Category = c,
             ArticleCount = articles.Count(a => a.CategoryId == c.CategoryId)

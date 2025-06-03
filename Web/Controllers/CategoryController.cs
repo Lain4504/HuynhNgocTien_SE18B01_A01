@@ -196,12 +196,29 @@ public class CategoryController : Controller
 
         try
         {
+            // Check if category exists
+            var category = await _categoryService.GetByIdAsync((short)id);
+            if (category == null)
+            {
+                TempData["Error"] = "Category not found";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Check if category has any news articles
+            if (await _categoryService.HasNewsArticlesAsync((short)id))
+            {
+                TempData["Error"] = "Cannot delete this category because it is associated with one or more news articles. Please remove or reassign these articles first.";
+                return RedirectToAction(nameof(Index));
+            }
+
             await _categoryService.DeleteAsync((short)id);
+            TempData["Success"] = "Category deleted successfully";
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            TempData["Error"] = ex.Message;
+            return RedirectToAction(nameof(Index));
         }
     }
 } 

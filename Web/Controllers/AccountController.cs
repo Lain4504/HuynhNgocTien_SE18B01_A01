@@ -156,16 +156,24 @@ public class AccountController : Controller
 
         try
         {
-            var account = new SystemAccount
+            var account = await _accountService.GetByIdAsync(model.AccountId);
+            if (account == null)
             {
-                AccountId = model.AccountId,
-                AccountName = model.AccountName,
-                AccountEmail = model.AccountEmail,
-                AccountPassword = model.AccountPassword,
-                AccountRole = model.AccountRole
-            };
+                return NotFound();
+            }
+
+            account.AccountName = model.AccountName;
+            account.AccountEmail = model.AccountEmail;
+            account.AccountRole = model.AccountRole;
+            
+            // Only update password if a new one is provided
+            if (!string.IsNullOrEmpty(model.AccountPassword))
+            {
+                account.AccountPassword = model.AccountPassword;
+            }
 
             await _accountService.UpdateAsync(account);
+            TempData["Success"] = "Account updated successfully";
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
@@ -209,12 +217,11 @@ public class AccountController : Controller
             return NotFound();
         }
 
-        var model = new SystemAccountViewModel
+        var model = new ProfileUpdateViewModel
         {
             AccountId = account.AccountId,
             AccountName = account.AccountName ?? "",
             AccountEmail = account.AccountEmail ?? "",
-            AccountPassword = account.AccountPassword ?? "",
             AccountRole = account.AccountRole ?? 0
         };
 
@@ -222,7 +229,7 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateProfile(SystemAccountViewModel model)
+    public async Task<IActionResult> UpdateProfile(ProfileUpdateViewModel model)
     {
         var accountId = HttpContext.Session.GetInt32("AccountId");
         if (!accountId.HasValue || accountId.Value != model.AccountId)
@@ -237,16 +244,21 @@ public class AccountController : Controller
 
         try
         {
-            var account = new SystemAccount
+            var account = await _accountService.GetByIdAsync(model.AccountId);
+            if (account == null)
             {
-                AccountId = model.AccountId,
-                AccountName = model.AccountName,
-                AccountEmail = model.AccountEmail,
-                AccountPassword = model.AccountPassword,
-                AccountRole = model.AccountRole
-            };
+                return NotFound();
+            }
+
+            account.AccountName = model.AccountName;
+            // Only update password if a new one is provided
+            if (!string.IsNullOrEmpty(model.AccountPassword))
+            {
+                account.AccountPassword = model.AccountPassword;
+            }
 
             await _accountService.UpdateAsync(account);
+            TempData["Success"] = "Profile updated successfully";
             return RedirectToAction(nameof(Profile));
         }
         catch (Exception ex)

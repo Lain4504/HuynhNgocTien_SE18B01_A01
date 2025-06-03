@@ -5,8 +5,11 @@
 }
 
 <div class="card shadow">
-    <div class="card-header">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Edit Account</h5>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
     </div>
     <div class="card-body">
         <form asp-action="Edit" method="post">
@@ -26,13 +29,14 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="AccountPassword" class="form-label">New Password (leave blank to keep current)</label>
+                <label asp-for="AccountPassword" class="form-label">New Password</label>
                 <input asp-for="AccountPassword" class="form-control" type="password" />
                 <span asp-validation-for="AccountPassword" class="text-danger"></span>
+                <small class="form-text text-muted">Leave blank if you don't want to change the password.</small>
             </div>
 
             <div class="mb-3">
-                <label asp-for="AccountRole" class="form-label"></label>
+                <label asp-for="AccountRole" class="form-label">Role</label>
                 <select asp-for="AccountRole" class="form-select">
                     <option value="1">Staff</option>
                     <option value="2">Lecturer</option>
@@ -43,7 +47,7 @@
 
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Save Changes</button>
-                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
             </div>
         </form>
     </div>

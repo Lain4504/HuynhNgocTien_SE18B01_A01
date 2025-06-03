@@ -159,10 +159,11 @@ public class NewsArticleController : Controller
         }
 
         var categories = await _categoryService.GetAllAsync();
+        var activeCategories = categories.Where(c => c.IsActive == true).ToList();
         var tags = await _newsArticleService.GetAllTagsAsync();
         var model = new NewsArticleViewModel
         {
-            AvailableCategories = categories.ToList(),
+            AvailableCategories = activeCategories,
             AvailableTags = tags.ToList()
         };
 
