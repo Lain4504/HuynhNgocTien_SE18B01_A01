@@ -92,6 +92,10 @@ public class NewsArticleController : Controller
         {
             articles = articles.Where(a => a.NewsStatus == true); // Only published articles
         }
+        else if (role == 3) // Admin can view all articles
+        {
+            // No filtering needed for admin - can view all articles
+        }
 
         // Apply search filter
         if (!string.IsNullOrEmpty(searchString))
@@ -139,6 +143,7 @@ public class NewsArticleController : Controller
         {
             return Forbid();
         }
+        // Admin (role == 3) can view all articles without restrictions
 
         return View(article);
     }
@@ -250,6 +255,7 @@ public class NewsArticleController : Controller
         {
             return Forbid();
         }
+        // Admin (role == 3) can edit all articles without restrictions
 
         var model = new NewsArticleViewModel
         {
@@ -301,6 +307,7 @@ public class NewsArticleController : Controller
             {
                 return Forbid();
             }
+            // Admin (role == 3) can edit all articles without restrictions
 
             article.NewsTitle = model.NewsTitle;
             article.Headline = model.Headline;
@@ -349,6 +356,7 @@ public class NewsArticleController : Controller
             {
                 return Forbid();
             }
+            // Admin (role == 3) can delete all articles without restrictions
 
             await _newsArticleService.DeleteAsync(id);
             return Json(new { success = true });
