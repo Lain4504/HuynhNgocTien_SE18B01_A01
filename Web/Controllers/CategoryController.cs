@@ -24,9 +24,10 @@ public class CategoryController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 3 && role != 1) // Allow both Admin and Staff to manage categories
+        if (role != 1 && role != 3) // Staff and Admin can view categories
         {
-            return Forbid();
+            TempData["Error"] = "You do not have permission to access this page.";
+            return RedirectToAction("Index", "Home");
         }
 
         var categories = await _categoryService.GetAllAsync();
@@ -43,9 +44,10 @@ public class CategoryController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 3 && role != 1) // Allow both Admin and Staff to create categories
+        if (role != 1) // Only Staff can create categories
         {
-            return Forbid();
+            TempData["Error"] = "You do not have permission to access this page.";
+            return RedirectToAction("Index", "Home");
         }
 
         var categories = await _categoryService.GetAllAsync();
@@ -67,9 +69,10 @@ public class CategoryController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 3 && role != 1) // Allow both Admin and Staff to create categories
+        if (role != 1) // Only Staff can create categories
         {
-            return Forbid();
+            TempData["Error"] = "You do not have permission to access this page.";
+            return RedirectToAction("Index", "Home");
         }
 
         if (!ModelState.IsValid)
@@ -109,9 +112,10 @@ public class CategoryController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 3 && role != 1) // Allow both Admin and Staff to edit categories
+        if (role != 1) // Only Staff can edit categories
         {
-            return Forbid();
+            TempData["Error"] = "You do not have permission to access this page.";
+            return RedirectToAction("Index", "Home");
         }
 
         var category = await _categoryService.GetByIdAsync((short)id);
@@ -144,9 +148,10 @@ public class CategoryController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 3 && role != 1) // Allow both Admin and Staff to edit categories
+        if (role != 1) // Only Staff can edit categories
         {
-            return Forbid();
+            TempData["Error"] = "You do not have permission to access this page.";
+            return RedirectToAction("Index", "Home");
         }
 
         if (!ModelState.IsValid)
@@ -189,9 +194,10 @@ public class CategoryController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 3 && role != 1) // Allow both Admin and Staff to delete categories
+        if (role != 1) // Only Staff can delete categories
         {
-            return Forbid();
+            TempData["Error"] = "You do not have permission to access this page.";
+            return RedirectToAction("Index", "Home");
         }
 
         try

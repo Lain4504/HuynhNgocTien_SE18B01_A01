@@ -2,6 +2,14 @@
     ViewData["Title"] = "Home";
 }
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <div class="row">
     <div class="col-md-8">
         <div class="card shadow mb-4">
@@ -72,7 +80,7 @@
             </div>
         </div>
 
-        @if (ViewBag.UserRole == 1 || ViewBag.UserRole == 3)
+        @if (ViewBag.UserRole == 1) // Only Staff can create articles and categories
         {
             <div class="card shadow">
                 <div class="card-body">
@@ -81,12 +89,9 @@
                         <a href="@Url.Action("Create", "NewsArticle")" class="btn btn-primary">
                             <i class="bi bi-plus-circle"></i> Create New Article
                         </a>
-                        @if (ViewBag.UserRole == 3)
-                        {
-                            <a href="@Url.Action("Create", "Category")" class="btn btn-outline-primary">
-                                <i class="bi bi-folder-plus"></i> Create New Category
-                            </a>
-                        }
+                        <a href="@Url.Action("Create", "Category")" class="btn btn-outline-primary">
+                            <i class="bi bi-folder-plus"></i> Create New Category
+                        </a>
                     </div>
                 </div>
             </div>

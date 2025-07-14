@@ -135,14 +135,12 @@ public class NewsArticleController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role == 1 && article.CreatedById != accountId) // Staff can only view their own articles
+        if (role == 2 && article.NewsStatus != true) // Lecturer can only view published articles
         {
-            return Forbid();
+            TempData["Error"] = "You can only view published articles.";
+            return RedirectToAction("Index");
         }
-        else if (role == 2 && article.NewsStatus != true) // Lecturer can only view published articles
-        {
-            return Forbid();
-        }
+        // Staff (role 1) and Admin (role 3) can view all articles
         // Admin (role == 3) can view all articles without restrictions
 
         return View(article);
@@ -158,9 +156,10 @@ public class NewsArticleController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 1 && role != 3) // Only Staff and Admin can create articles
+        if (role != 1) // Only Staff can create articles (Admin cannot)
         {
-            return Forbid();
+            TempData["Error"] = "You do not have permission to create articles.";
+            return RedirectToAction("Index", "Home");
         }
 
         var categories = await _categoryService.GetAllAsync();
@@ -185,9 +184,10 @@ public class NewsArticleController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 1 && role != 3) // Only Staff and Admin can create articles
+        if (role != 1) // Only Staff can create articles (Admin cannot)
         {
-            return Forbid();
+            TempData["Error"] = "You do not have permission to create articles.";
+            return RedirectToAction("Index", "Home");
         }
 
         if (!ModelState.IsValid)
@@ -240,9 +240,10 @@ public class NewsArticleController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 1 && role != 3) // Only Staff and Admin can edit articles
+        if (role != 1) // Only Staff can edit articles (Admin cannot)
         {
-            return Forbid();
+            TempData["Error"] = "You do not have permission to edit articles.";
+            return RedirectToAction("Index", "Home");
         }
 
         var article = await _newsArticleService.GetByIdAsync(id);
@@ -251,11 +252,7 @@ public class NewsArticleController : Controller
             return NotFound();
         }
 
-        if (role == 1 && article.CreatedById != accountId) // Staff can only edit their own articles
-        {
-            return Forbid();
-        }
-        // Admin (role == 3) can edit all articles without restrictions
+        // Staff can edit all articles, no ownership restriction
 
         var model = new NewsArticleViewModel
         {
@@ -284,9 +281,10 @@ public class NewsArticleController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 1 && role != 3) // Only Staff and Admin can edit articles
+        if (role != 1) // Only Staff can edit articles (Admin cannot)
         {
-            return Forbid();
+            TempData["Error"] = "You do not have permission to edit articles.";
+            return RedirectToAction("Index", "Home");
         }
 
         if (!ModelState.IsValid)
@@ -303,11 +301,7 @@ public class NewsArticleController : Controller
                 return NotFound();
             }
 
-            if (role == 1 && article.CreatedById != accountId) // Staff can only edit their own articles
-            {
-                return Forbid();
-            }
-            // Admin (role == 3) can edit all articles without restrictions
+            // Staff can edit all articles, no ownership restriction
 
             article.NewsTitle = model.NewsTitle;
             article.Headline = model.Headline;
@@ -339,9 +333,10 @@ public class NewsArticleController : Controller
         }
 
         var role = HttpContext.Session.GetInt32("AccountRole");
-        if (role != 1 && role != 3) // Only Staff and Admin can delete articles
+        if (role != 1) // Only Staff can delete articles (Admin cannot)
         {
-            return Forbid();
+            TempData["Error"] = "You do not have permission to delete articles.";
+            return RedirectToAction("Index", "Home");
         }
 
         try
@@ -352,11 +347,7 @@ public class NewsArticleController : Controller
                 return NotFound();
             }
 
-            if (role == 1 && article.CreatedById != accountId) // Staff can only delete their own articles
-            {
-                return Forbid();
-            }
-            // Admin (role == 3) can delete all articles without restrictions
+            // Staff can delete all articles, no ownership restriction
 
             await _newsArticleService.DeleteAsync(id);
             return Json(new { success = true });

@@ -2,14 +2,18 @@
 
 @{
     ViewData["Title"] = "Categories";
+    var userRole = Context.Session.GetInt32("AccountRole");
 }
 
 <div class="card shadow">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Categories</h5>
-        <a asp-action="Create" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Create New
-        </a>
+        @if (userRole == 1) // Only Staff can create categories
+        {
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New
+            </a>
+        }
     </div>
     <div class="card-body">
         @if (TempData["Success"] != null)
@@ -58,16 +62,23 @@
                                     }
                                 </td>
                                 <td>
-                                    <div class="btn-group">
-                                        <a asp-action="Edit" asp-route-id="@item.CategoryId" 
-                                           class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                onclick="showDeleteModal(@item.CategoryId, '@item.CategoryName')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
+                                    @if (userRole == 1) // Only Staff can edit/delete categories
+                                    {
+                                        <div class="btn-group">
+                                            <a asp-action="Edit" asp-route-id="@item.CategoryId"
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                    onclick="showDeleteModal(@item.CategoryId, '@item.CategoryName')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">View only</span>
+                                    }
                                 </td>
                             </tr>
                         }

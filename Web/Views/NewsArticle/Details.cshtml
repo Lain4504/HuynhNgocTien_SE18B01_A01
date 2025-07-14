@@ -8,8 +8,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Article Details</h5>
         <div>
-            @if ((Context.Session.GetInt32("AccountRole") == 3) ||
-                 (Context.Session.GetInt32("AccountRole") == 1 && Model.CreatedById == Context.Session.GetInt32("AccountId")))
+            @if (Context.Session.GetInt32("AccountRole") == 1) // Staff can edit/delete all articles
             {
                 <a asp-action="Edit" asp-route-id="@Model.NewsArticleId" class="btn btn-primary">
                     <i class="bi bi-pencil"></i> Edit
